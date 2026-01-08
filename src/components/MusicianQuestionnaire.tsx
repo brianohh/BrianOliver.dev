@@ -51,10 +51,13 @@ const initialFormData: FormData = {
   preferredTime: "",
 };
 
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/xbdlnbzy";
+
 export default function MusicianQuestionnaire() {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleCheckboxChange = (
     field: "primaryGoals" | "contentReady" | "mustHaveFeatures",
@@ -88,49 +91,60 @@ export default function MusicianQuestionnaire() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError(null);
 
-    // Format the form data for email
-    const formattedData = `
-MUSICIAN WEBSITE QUESTIONNAIRE
+    // Format data for Formspree submission
+    const submissionData = {
+      // Project Overview
+      "Primary Goals": formData.primaryGoals.join(", "),
+      "Primary Goals (Other)": formData.primaryGoalsOther,
+      "Target Audience": formData.targetAudience,
+      "Biggest Priority": formData.biggestPriority,
 
-PROJECT OVERVIEW
-================
-Primary Goals: ${formData.primaryGoals.join(", ")}${formData.primaryGoalsOther ? ` - Other: ${formData.primaryGoalsOther}` : ""}
-Target Audience: ${formData.targetAudience}
-Biggest Priority: ${formData.biggestPriority}
+      // Content & Branding
+      "Existing Branding": formData.existingBranding,
+      "Content Ready": formData.contentReady.join(", "),
+      "Website Inspiration": formData.websiteInspiration,
 
-CONTENT & BRANDING
-==================
-Existing Branding: ${formData.existingBranding}
-Content Ready: ${formData.contentReady.join(", ")}
-Website Inspiration: ${formData.websiteInspiration}
+      // Features & Functionality
+      "Must-Have Features": formData.mustHaveFeatures.join(", "),
+      "Must-Have Features (Other)": formData.mustHaveFeaturesOther,
+      "Needs E-commerce": formData.needsEcommerce,
+      "Direct Booking": formData.directBooking,
 
-FEATURES & FUNCTIONALITY
-========================
-Must-Have Features: ${formData.mustHaveFeatures.join(", ")}${formData.mustHaveFeaturesOther ? ` - Other: ${formData.mustHaveFeaturesOther}` : ""}
-Needs E-commerce: ${formData.needsEcommerce}
-Direct Booking: ${formData.directBooking}
+      // Management & Updates
+      "Site Manager": formData.siteManager,
+      "Update Frequency": formData.updateFrequency,
+      "Other Details": formData.otherDetails,
 
-MANAGEMENT & UPDATES
-====================
-Site Manager: ${formData.siteManager}
-Update Frequency: ${formData.updateFrequency}
-Other Details: ${formData.otherDetails}
+      // Contact
+      Phone: formData.phone,
+      Email: formData.email,
+      "Preferred Contact Time": formData.preferredTime,
+    };
 
-CONTACT INFO
-============
-Phone: ${formData.phone}
-Email: ${formData.email}
-Preferred Day/Time: ${formData.preferredTime}
-    `.trim();
+    try {
+      const response = await fetch(FORMSPREE_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(submissionData),
+      });
 
-    // Create mailto link with form data
-    const mailtoLink = `mailto:hello@brianoliver.dev?subject=${encodeURIComponent("Musician Website Questionnaire Submission")}&body=${encodeURIComponent(formattedData)}`;
-
-    window.location.href = mailtoLink;
-
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+      if (response.ok) {
+        setIsSubmitted(true);
+        setFormData(initialFormData);
+      } else {
+        throw new Error("Form submission failed");
+      }
+    } catch {
+      setSubmitError(
+        "There was a problem submitting the form. Please try again or email hello@brianoliver.dev directly."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSubmitted) {
@@ -156,15 +170,15 @@ Preferred Day/Time: ${formData.preferredTime}
             Thank You!
           </h2>
           <p className="text-muted text-lg mb-8">
-            Your email client should have opened with your questionnaire responses.
-            Please send the email to complete your submission.
+            Your questionnaire has been submitted successfully. I&apos;ll review your
+            responses and get back to you soon!
           </p>
-          <button
-            onClick={() => setIsSubmitted(false)}
-            className="px-8 py-3 border border-border rounded-full font-medium hover:border-foreground transition-colors"
+          <a
+            href="/"
+            className="inline-block px-8 py-3 border border-border rounded-full font-medium hover:border-foreground transition-colors"
           >
-            Fill Out Again
-          </button>
+            Back to Home
+          </a>
         </div>
       </section>
     );
@@ -617,6 +631,11 @@ Preferred Day/Time: ${formData.preferredTime}
 
           {/* Submit Button */}
           <div className="pt-8 border-t border-border">
+            {submitError && (
+              <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-600 dark:text-red-400">
+                {submitError}
+              </div>
+            )}
             <button
               type="submit"
               disabled={isSubmitting}
@@ -624,9 +643,6 @@ Preferred Day/Time: ${formData.preferredTime}
             >
               {isSubmitting ? "Submitting..." : "Submit Questionnaire"}
             </button>
-            <p className="mt-4 text-sm text-muted">
-              This will open your email client with your responses. Just hit send!
-            </p>
           </div>
         </form>
       </div>
