@@ -15,15 +15,17 @@ export default function Hero() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <a
             href="#projects"
-            className="px-8 py-3 bg-foreground text-background rounded-full font-medium hover:opacity-90 transition-opacity"
+            className="px-8 py-3 bg-gradient-to-r from-accent to-accent-dark text-white rounded-full font-medium hover:opacity-90 transition-opacity shadow-lg shadow-accent/25"
           >
             View My Work
           </a>
           <a
             href="#contact"
-            className="px-8 py-3 border border-border rounded-full font-medium hover:border-foreground transition-colors"
+            className="group relative px-8 py-3 rounded-full font-medium overflow-hidden"
           >
-            Get In Touch
+            <span className="absolute inset-0 bg-gradient-to-r from-accent to-accent-dark opacity-0 group-hover:opacity-100 transition-opacity"></span>
+            <span className="absolute inset-0 border-2 border-accent rounded-full group-hover:border-transparent transition-colors"></span>
+            <span className="relative text-accent group-hover:text-white transition-colors">Get In Touch</span>
           </a>
         </div>
       </div>

@@ -1,12 +1,12 @@
 const skills = [
-  "React",
-  "Next.js",
-  "TypeScript",
-  "JavaScript",
-  "Tailwind CSS",
-  "Node.js",
-  "Figma",
-  "UI/UX Design",
+  { name: "React", color: "bg-skill-react text-gray-900" },
+  { name: "Next.js", color: "bg-skill-next text-white dark:text-black dark:bg-white" },
+  { name: "TypeScript", color: "bg-skill-ts text-white" },
+  { name: "JavaScript", color: "bg-skill-js text-gray-900" },
+  { name: "Tailwind CSS", color: "bg-skill-tailwind text-white" },
+  { name: "Node.js", color: "bg-skill-node text-white" },
+  { name: "Figma", color: "bg-skill-figma text-white" },
+  { name: "UI/UX Design", color: "bg-skill-design text-white" },
 ];
 
 export default function About() {
@@ -37,10 +37,10 @@ export default function About() {
             <div className="flex flex-wrap gap-2">
               {skills.map((skill) => (
                 <span
-                  key={skill}
-                  className="px-4 py-2 bg-border/50 rounded-full text-sm"
+                  key={skill.name}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-transform hover:scale-105 ${skill.color}`}
                 >
-                  {skill}
+                  {skill.name}
                 </span>
               ))}
             </div>

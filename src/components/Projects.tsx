@@ -12,7 +12,7 @@ export default function Projects() {
           {projects.map((project, index) => (
             <article
               key={project.id}
-              className="group bg-background border border-border rounded-2xl overflow-hidden hover:border-muted transition-colors"
+              className="group bg-background border border-border rounded-2xl overflow-hidden hover:border-accent hover:shadow-lg hover:shadow-accent/10 transition-all duration-300"
             >
               {project.image && (
                 <div className="relative w-full aspect-[16/9] overflow-hidden bg-border/50">
@@ -52,7 +52,7 @@ export default function Projects() {
                           href={project.liveUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm font-medium hover:text-accent transition-colors inline-flex items-center gap-1"
+                          className="text-sm font-medium text-accent hover:text-accent-dark transition-colors inline-flex items-center gap-1"
                         >
                           View Live
                           <svg

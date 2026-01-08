@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import ThemeToggle from "./ThemeToggle";
 
 const navLinks = [
@@ -11,6 +12,7 @@ const navLinks = [
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,6 +20,30 @@ export default function Header() {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const checkTheme = () => {
+      const theme = document.documentElement.getAttribute("data-theme");
+      if (theme) {
+        setIsDark(theme === "dark");
+      } else {
+        setIsDark(window.matchMedia("(prefers-color-scheme: dark)").matches);
+      }
+    };
+
+    checkTheme();
+
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    mediaQuery.addEventListener("change", checkTheme);
+
+    return () => {
+      observer.disconnect();
+      mediaQuery.removeEventListener("change", checkTheme);
+    };
   }, []);
 
   return (
@@ -31,9 +57,16 @@ export default function Header() {
       <nav className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
         <a
           href="#"
-          className="text-lg font-semibold tracking-tight hover:text-accent transition-colors"
+          className="hover:opacity-80 transition-opacity"
         >
-          Brian Oliver
+          <Image
+            src={isDark ? "/brian-oliver-logo-300w-white.png" : "/brian-oliver-logo-300w.png"}
+            alt="Brian Oliver"
+            width={150}
+            height={40}
+            className="h-8 w-auto"
+            priority
+          />
         </a>
         <div className="flex items-center gap-6">
           <ul className="flex items-center gap-8">
@@ -41,7 +74,7 @@ export default function Header() {
               <li key={link.href}>
                 <a
                   href={link.href}
-                  className="text-sm text-muted hover:text-foreground transition-colors"
+                  className="text-sm text-muted hover:text-accent transition-colors"
                 >
                   {link.label}
                 </a>
